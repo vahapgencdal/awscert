@@ -35,8 +35,7 @@ As you can see regions have numbers and AZ have letter after region.
 
 Okay, so what is an AZ? 
 
-[logo]: /images/AZ.png "Availability Zones" 
-
+![The Availibility Zones](/images/AZ.png "The Availibility Zones")
 
 Each AZ is one or more discrete data centers,
 
@@ -45,3 +44,33 @@ And each data center will have redundant power,networking and connectivity. But 
 So the AZ ap-southeast-2a is distinct and geographically isolated from 2b and 2c, okay. But even though they're geographically distant, and isolated from disasters, they're still connected with one another with high bandwidth ultra-low latency networking.
 
 So we have a connectivity between all the availability zones.
+
+## 3.  The Identity and Access Management (IAM) Service
+As we can expect from the name that basically means users. So the whole of your AWS security is going to be in IAM. There's gonna be users, groups, roles and permissions. Here we are going to use root account is the main account. it is just one and then we will create user xxx by root user. then we will use the xxx account for training. 
+* with IAM we are going to create policies and these policies will be written in JSON.
+
+![The IAM](/images/IAM.png "The IAM")
+
+ Now users can be grouped together  and group is whatever you want it to be but usually it's by functions, for example admin, devops or by teams, such as engineering, design or anything you want.
+ you can apply permissions to groups and users will inherit these permissions.
+
+Finally we have roles.
+roles are only for internal usage within the AWS resources and services, okay. So roles is what we're going to give to machines.
+Users is going to be for a physical person and roles is going to be for a machine. Iam is very handy if you want to manage your users. 
+
+MFA is Multi-factor authentication. is using for extra security for example use google authenticator.
+
+####The Steps
+1. Create User 
+2. Define User Details.
+3. Select AWS access type. Programatic and Management Console
+4. Set Console Password.
+5. Set permissions.
+    here you can create group or you can attach existing policies directly. when you create group the user you choosed will be defined under the group. and you are going to attach policies to the group. thus all the users will get the policies.
+6. Then you are going to define tag.
+    your account id is in your sign-in link :
+    https://048XXXXXXXXX.signin.aws.amazon.com/console. here the number start with 048 is your account number.
+7. you can change user password policies under Account Setting.
+
+## 4.  The EC2
+ 
