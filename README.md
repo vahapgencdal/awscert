@@ -72,5 +72,11 @@ MFA is Multi-factor authentication. is using for extra security for example use 
     https://048XXXXXXXXX.signin.aws.amazon.com/console. here the number start with 048 is your account number.
 7. you can change user password policies under Account Setting.
 
-## 4.  The EC2
- 
+## 4. The EC2
+ EC2 is basicly servers. when you try to lunch a EC2 basicly you are going to create a Virtual Server.
+ it mainly sonsist : 
+ * Renting Virtual Machines(EC2)
+ * Storing data on virtual drives(EBS)
+ * Distributes load accross machines(ELB)
+ * Scaling the services using an auto-scaling group(ASG)
+
