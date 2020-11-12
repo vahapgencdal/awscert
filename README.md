@@ -95,7 +95,7 @@ so in this example we will choose Amazon Linux 2 AMI.
 7. review part and click Lunch; here you are going to create key pair for access your machine from SSH. dont give your key anybody or deploy public place. download them and Click Launch Instances
 
 ### Connect EC2 Instance
-* from Mac OS/Linux
+#### **Mac OS/Linux**
   1. copy your public ip in instnace-detail you will find it. and check from security groups port 22 open.
   2. ssh ec2-user@x.xx.xxx.xx when you run that in the first i will want key from you.
   3. so goto under the folder which one has your key and try to run below command
@@ -104,7 +104,7 @@ so in this example we will choose Amazon Linux 2 AMI.
   6. for fixing chmod 0400 training-instance.pem
   7. ssh -i training-instance.pem ec2-user@x.xx.xxx.xx again 
   8. now you are in
-* from Windows  
+#### **Windows**  
   1.  after you install putty you need to open puttygen for transform .pem file to .ppk
   2.  after you load just click **save private key** button
   3.  open your putty again
@@ -113,7 +113,42 @@ so in this example we will choose Amazon Linux 2 AMI.
   6.  then for referance ppk file goto SSH from left menu then Auth
   7.  in the right side **private key file for authentication**  browse and load ppk
   8.  then click open you will connect successfully
-* from browser
-    instance->actions->connect
+#### **Browser**  
+   1. instance->actions->connect
+   2. 
+## 5. The Security Group   
+Security groups, they're fundamental of the network security in AWS. They control how traffic will be allowed into your EC2 Machines.
+and as such they are super important and fundamental of Security. 
 
-   
+![The Security Group](/images/SC.png "The SC")
+
+SC is using for control the inbound and the outbound traffic.
+**for example** : lets go to our default security group and open inbound section and try to remove SSH rule.  
+**what we are going to do?**  now we have no more inbound rules into our machine. Now what happens is that if we go ahead and try to SSH again, while the port 22 is not allowed and as you can see we'll just wait wait and time out.  
+* Security groups are locked down to a region/VPC combination
+* if you switch to another region, you have to create a new security group
+* if you create another VPC, you have to recreate the Security Groups.
+* The security groups live outside the EC2.
+* it's really a firewall outside your EC2 instance
+* if you try to connect to any port and your computer just hangs and waits that's probably a security group issue
+* if you get a "connection refused" error, then its an application error or its not launched.
+* All inbound traffic is blocked by default
+* all outbound traffic is authorised by default
+## 6. Private vs Public IP(IPv4)
+Networking is to sort of have IP, there is IPv4 and IPv6. AWS has support for IPv6 as well.
+
+for example, my company
+it has a private network, the private network, basically has a private IP range, and private IPs have this very specific way of being defined but basically, that means that all the computers within that private network can talk to one another using the private IP.
+Whereas, when you touch an internet gateway, which is a public gateway, well, these instances also will get access to other servers, and so on and so that's a common pattern in AWS.
+
+![The AWS - Company Network](/images/IP-NET.png "The Net")
+
+Now, basically, if you have another company it will also have a private network and within the private network, every computer can talk to one another and maybe also have an internet gateway with an IP and basically can connect all over the internet and talk to other servers, okay.
+### Elastic IPs
+when you start and you stop an EC2 instance, it will change its public IP
+if you have a fixed public IP for whatever reason for your instance, what you are going to need is something called an Elastic IP.
+So the Elastic IP is what, it's a public IPv4 and you own it, as long as you don't delete it.
+*  it's quite an uncommon pattern, because you can only have five Elastic IP in your accounts
+*  Overall, I would recommend to try avoiding using Elastic IP. they're often referred very poor architectural decisions
+*  Instead of Elastic IP, you should use a random public IP and assign a DNS name to it.
+*  we can also use a Load Balancer and not using public IP
