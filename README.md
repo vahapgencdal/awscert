@@ -60,7 +60,7 @@ Users is going to be for a physical person and roles is going to be for a machin
 
 MFA is Multi-factor authentication. is using for extra security for example use google authenticator.
 
-####The Steps
+#### The Steps
 1. Create User 
 2. Define User Details.
 3. Select AWS access type. Programatic and Management Console
@@ -152,3 +152,119 @@ So the Elastic IP is what, it's a public IPv4 and you own it, as long as you don
 *  Overall, I would recommend to try avoiding using Elastic IP. they're often referred very poor architectural decisions
 *  Instead of Elastic IP, you should use a random public IP and assign a DNS name to it.
 *  we can also use a Load Balancer and not using public IP
+### Practice
+* we cannot use that private IP to access my instances. when we try you will get timeout error. because it is private ip of AWS private network and you are trying to access from personal network
+* in ec-2 instance type **ifconfig -a** you will get information of network.
+* when you try stop and start instance you will see new public-ip
+* for stable public-ip goto **Elastic-ip addresses** menu.
+* Allocate elastic ip address from Amazon's pool. there you are a stable public-ip
+* then goto **Actions->Associate Elastic ip address**
+* and then choose your instance and Click **Associate**
+* then when you restart instance you will see public-ip is not going to change
+* then deassociate your elastic ip and release Elastic IP because AWS charging money for elastic-ip
+## 6. Launc an Apache Server on EC2
+ we are actually going to use our EC2 instance to launch an Apache Server on it.
+So, we'll install an Apache Web Server, and we'll basically display a web page, and for this web page we'll just create
+something called index.html, that will show the hostname of our machine.  
+  1. First we are going to connect our instance with our public-ip 
+  2. **sudo su** and this will basically elevate my rights on the machine.
+  3. **yum update -y** This basically forces my machine to update itself.
+  4. **yum install -y httpd.x86_64** this will install apache httpd for us
+  5. **systemctl start httpd.service** will start httpd service
+  6. **systemctl enable httpd.service** will enable httpd service
+  7. **curl localhost:80** you will see the html result
+  8. you can access from browser but you need to change security group. because it just allow SSH and port to
+  9. goto to your training-security group which assigned your instance and then add new inbound rule select http and 80 port then save
+  10. you can see which security-group assigned your instance from security part.
+  11. lets change html
+  12. echo "Hello World from $(hostname -f)" > /var/www/html/index.html
+  13. and goto your browser and type public_ip:80. you should see 'hello world' html
+   
+## 7. EC2 User Data
+it is possible to bootstrap our instances using an EC2 user data script. Well, bootstrapping means launching commands when the machine starts.
+So, that script is only run once and when it first starts.
+when you boot your instance? 
+Well you want to install updates, install software, download common files from the internet, or anything you can think of, really.
+* we regoing to terminate our instance create new instance and update instance and download apache http
+* when you come **Configure instance detail** goto ** Advanced details ** and paste below scripts there  
+    ```script
+    #!/bin/bash
+
+    ########################################################
+    ##### USE THIS FILE IF YOU LAUNCHED AMAZON LINUX 2 #####
+    ########################################################
+
+    # get admin privileges
+    sudo su
+
+    # install httpd (Linux 2 version)
+    yum update -y
+    yum install -y httpd.x86_64
+    systemctl start httpd.service
+    systemctl enable httpd.service
+    echo "Hello World from $(hostname -f)" > /var/www/html/index.html
+    ``` 
+* after your instance launched goto browser and you will see your 'Hello World' html.
+## 8. EC2 instance Launch Types
+they're very important for you to know going to the exam to understand which type of launch will allow you.
+* **On Demand Instances** 
+these are the type of instances we've been using from the beginning. So that when we create an instance,
+and we have it right away, they're on demand. And it's great when you have a short workload, and want you to have predictable pricing, you get an hourly pricing ahead of time.
+  1. Pay for what you use(billing persecond, after the first minute)
+  2. has the highest cost but no upfront payment
+  3. No long term commitment
+* **Reseverved Instances**  
+    Minimum 1 year instances; if you run some instances for a known amount of time, for example, you know that at least for one year, because maybe you run a database on it, then you should use a reserved instance type.  
+     * Up to 75% discount compared to On-demand 
+     * Pay upfront for what you use with long term commitment 
+     * Reservation period can be 1 or 3 years 
+     * Reserve a specific instance type 
+     * Recommended for steady state usage applications (think database)
+    1. **Convertible Reserved Instances**: 
+     in which instead of saying you want a M four X large for one year, you're saying I want something for one year, and you can convert what that something is. So maybe it's an M four X large today, but maybe it's going to be a C five large tomorrow.
+       * can change the EC2 instance type 
+       * Up to 54% discount
+    2. **Scheduled reserved instances**: 
+    hey, I wanna have that instance every Thursday between three and 6:00 pm because I know I'm going to run some job between this time, but other than that, I don't need it. 
+       * launch within time window you reserve 
+       * When you require a fraction of day / week / month
+* **Spot Instances**  
+     it's going to be for short workloads, they're going to be very, very cheap, but the risk is that you can lose the instance, and that makes spot instances less reliable.
+     * Can get a discount of up to 90% compared to On-demand
+     * Instances that you can “lose” at any point of time if your max price is less than the
+        current spot price
+     * The MOST cost-efficient instances in AWS
+     * Useful for workloads that are resilient to failure (Batch Jobs, Data Analyst ...)
+     * Not great for critical jobs or databases
+     * Great combo: Reserved Instances for baseline + On-Demand & Spot for peaks
+* **Dedicated Instances**  
+    we have dedicated instances where we know that no other customers will share the hardware, the underlying hardware on AWS.  
+    * instances running on hardware that’s dedicated to you
+    * May share hardware with other instances in same account
+    * No control over instance placement (can move hardware after Stop / Start)
+* **Dedicated Host**  
+  where you actually book the entire physical server, and you control instance placements.
+    * Physical dedicated EC2 server for your use
+    * Full control of EC2 Instance placement
+    * Visibility into the underlying sockets / physical cores of the hardware
+    * Allocated for your account for a 3 year period reservation
+    * More expensive
+    * Useful for software that have complicated licensing model (BYOL – Bring Your Own License)
+    * Or for companies that have strong regulatory or compliance needs
+### **Which host is right for me?**
+*  On demand: coming and staying in resort whenever we like, we pay the full price
+* Reserved: like planning ahead and if we plan to stay for a long time, we may get a good discount.
+* Spot instances: the hotel allows people to bid for the empty rooms and the highest bidder keeps the rooms. You can get kicked out at any time
+* Dedicated Hosts: We book an entire building of the resort
+### **EC2 Pricing**
+* EC2 instances prices (per hour) varies based on these parameters 
+    * Region you’re in
+    * Instance Type you’re using
+    * On-Demand vs Spot vs Reserved vs Dedicated Host
+    * Linux vs Windows vs Private OS (RHEL, SLES, Windows SQL)
+* You are billed by the second, with a minimum of 60 seconds. 
+* You also pay for other factors such as storage, data transfer, fixed IP public addresses, load balancing
+* You do not pay for the instance if the instance is stopped
+
+if you goto Instances you will see all instance type on left menu
+## 8. Elastic Network Interfaces (ENI)
